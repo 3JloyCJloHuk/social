@@ -1,21 +1,28 @@
 import React from 'react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { BrowserRouter } from 'react-router-dom';
-import { FirebaseAppProvider } from 'reactfire';
-import firebaseApp from '../../../common/firebaseApp';
-import theme from '../../../common/theme';
+import { AuthProvider, FirestoreProvider, useFirebaseApp } from 'reactfire';
 import Root from '../Root';
+import theme from '../../../common/theme';
+import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 const App: React.FC = () => {
+  const app = useFirebaseApp();
+  const firestoreDatabase = getFirestore(app);
+  const auth = getAuth(app);
+
   return (
-    <FirebaseAppProvider firebaseApp={firebaseApp}>
-      <ThemeProvider theme={theme}>
-        <BrowserRouter basename={process.env.PUBLIC_URL || '/'}>
-          <CssBaseline />
-          <Root />
-        </BrowserRouter>
-      </ThemeProvider>
-    </FirebaseAppProvider>
+    <BrowserRouter>
+      <AuthProvider sdk={auth}>
+        <FirestoreProvider sdk={firestoreDatabase}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Root />
+          </ThemeProvider>
+        </FirestoreProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 };
 

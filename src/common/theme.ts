@@ -10,6 +10,14 @@ const defaultTheme = createTheme({
         },
       },
     },
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          position: 'absolute',
+          top: '55px',
+        },
+      },
+    },
   },
 });
 

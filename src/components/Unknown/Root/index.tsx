@@ -1,37 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useUser } from 'reactfire';
+import { useSigninCheck } from 'reactfire';
+
 import SignIn from '../../Auth/SignIn';
 import SignUp from '../../Auth/SignUp';
-import GuestLayout from '../GuestLayout';
 import AuthenticatedLayout from '../AuthenticatedLayot';
+import GuestLayout from '../GuestLayout';
+import HomeScreen from '../HomeScreen';
 import NotFoundScreen from '../NotFoundScreen';
 
 const Root: React.FC = () => {
-  const {
-    data: user,
-    // hasEmitted,
-    firstValuePromise,
-  } = useUser();
-  const [isUserLoaded, setIsUserLoaded] = useState(false);
-  const isLogged = !!user;
-  useEffect(() => {
-    firstValuePromise.then(() => setIsUserLoaded(true));
-  }, [firstValuePromise, setIsUserLoaded]);
-
+  const { status, data: signInCheckResult } = useSigninCheck();
   // doesn't always work, but suddenly works when subscribing to `firstValuePromise`
   // thus we use `isUserLoaded` below
   // if (!hasEmitted) {
   //   return null;
   // }
-  if (!isUserLoaded) {
-    return null;
+  if (status === 'loading') {
+    return <div>loading</div>;
   }
 
-  if (isLogged) {
+  if (signInCheckResult?.signedIn) {
     return (
       <AuthenticatedLayout>
         <Routes>
+          <Route path="/" element={<HomeScreen />} />
           <Route path="/login" element={<Navigate to="/" />} />
           <Route path="/register" element={<Navigate to="/" />} />
           <Route path="*" element={<NotFoundScreen />} />
